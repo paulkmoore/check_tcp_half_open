@@ -29,72 +29,75 @@
 
 #include "check_tcp_half_open.h"
 
-/* GNU Libraries */
-#include <getopt.h>
-
 const char *progname = "check_tcp_half_open";
 const char *copyright = "2018";
 const char *email = "paul@hypermedia.technology";
 
+static int verbose_flag;		/* Flag set by ‘--verbose’ */
 
+int main (int argc, char **argv) {
+  int c;
 
+  while (1) {
+      static struct option long_options[] = {
+          /* These options set a flag. */
+          {"verbose", no_argument,       &verbose_flag, 1},
+          {"brief",   no_argument,       &verbose_flag, 0},
+          /* These options don’t set a flag.
+             We distinguish them by their indices. */
+          {"host",    required_argument, 0, 'h'},
+          {"port",    required_argument, 0, 'p'},
+          {0, 0, 0, 0}
+        };
+        
+      /* getopt_long stores the option index here. */
+      int option_index = 0;
 
+      c = getopt_long (argc, argv, "h:p:",
+                       long_options, &option_index);
 
+      /* Detect the end of the options. */
+      if (c == -1)
+        break;
 
+      switch (c)
+        {
+        case 0:
+          /* If this option set a flag, do nothing else now. */
+          if (long_options[option_index].flag != 0)
+            break;
+          printf ("option %s", long_options[option_index].name);
+          if (optarg)
+            printf (" with arg %s", optarg);
+          printf ("\n");
+          break;
 
-void print_help(void){
-	print_revision(progname, NP_VERSION);
+        /*case 'b':
+          puts ("option -b\n");
+          break;*/
 
-	printf ("Copyright (c) 2006 Sean Finney\n");
-	printf (COPYRIGHT, copyright, email);
+        case 'h':
+          printf ("option -h with value `%s'\n", optarg);
+          break;
 
-	printf ("%s\n", _("This plugin checks the selected ntp server"));
+        case 'p':
+          printf ("option -p with value `%s'\n", optarg);
+          break;
 
-	printf ("\n\n");
+        case '?':
+          /* getopt_long already printed an error message. */
+          break;
 
-	print_usage();
-	printf (UT_HELP_VRSN);
-	printf (UT_EXTRA_OPTS);
-	printf (UT_HOST_PORT, 'p', "123");
-	printf (UT_IPv46);
-	printf (" %s\n", "-w, --warning=THRESHOLD");
-	printf ("    %s\n", _("Offset to result in warning status (seconds)"));
-	printf (" %s\n", "-c, --critical=THRESHOLD");
-	printf ("    %s\n", _("Offset to result in critical status (seconds)"));
-	printf (" %s\n", "-j, --jwarn=THRESHOLD");
-	printf ("    %s\n", _("Warning threshold for jitter"));
-	printf (" %s\n", "-k, --jcrit=THRESHOLD");
-	printf ("    %s\n", _("Critical threshold for jitter"));
-	printf (UT_CONN_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
-	printf (UT_VERBOSE);
-
-	printf("\n");
-	printf("%s\n", _("Notes:"));
-	printf(UT_THRESHOLDS_NOTES);
-
-	printf("\n");
-	printf("%s\n", _("Examples:"));
-	printf(" %s\n", _("Normal offset check:"));
-	printf("  %s\n", ("./check_ntp -H ntpserv -w 0.5 -c 1"));
-	printf("\n");
-	printf(" %s\n", _("Check jitter too, avoiding critical notifications if jitter isn't available"));
-	printf(" %s\n", _("(See Notes above for more details on thresholds formats):"));
-	printf("  %s\n", ("./check_ntp -H ntpserv -w 0.5 -c 1 -j -1:100 -k -1:200"));
-
-	printf (UT_SUPPORT);
-
-	printf ("%s\n", _("WARNING: check_ntp is deprecated. Please use check_ntp_peer or"));
-	printf ("%s\n\n", _("check_ntp_time instead."));
+        default:
+          abort ();
+        }
+    }
 }
 
-void
-print_usage(void)
-{
-	printf ("%s\n", _("WARNING: check_ntp is deprecated. Please use check_ntp_peer or"));
-	printf ("%s\n\n", _("check_ntp_time instead."));
-	printf ("%s\n", _("Usage:"));
-	printf(" %s -H <host> [-w <warn>] [-c <crit>] [-j <warn>] [-k <crit>] [-4|-6] [-v verbose]\n", progname);
-}
+
+
+
+
 
 
 

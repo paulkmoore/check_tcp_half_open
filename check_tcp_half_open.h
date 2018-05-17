@@ -28,6 +28,13 @@
 *
 *****************************************************************************/
 
+/* Standard libraries */
+#include <stdio.h>
+#include <stdlib.h>
+
+/* GNU Libraries */
+#include <getopt.h>
+
 enum {
 	OK = 0,
 	ERROR = -1
